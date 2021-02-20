@@ -74,7 +74,6 @@ namespace IP_changer.ViewModel
             CDataManager.m_sDNS = "8.8.8.8";
             CDataManager.m_sTargetIP = "192.168.0.101";
             CDataManager.m_bApplyEnable = false;
-            CDataManager.m_bLock = false;
         }
 
         private void _applyDataManager()
@@ -92,10 +91,7 @@ namespace IP_changer.ViewModel
         }
         private void Settings()
         {
-            CDataManager.m_bLock = true;
-            settings.Show();
-            if (CDataManager.m_bApplyEnable)
-                _applyDataManager();           
+            settings.Show();          
         }
 
         private ICommand pingCommand;

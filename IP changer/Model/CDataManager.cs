@@ -14,6 +14,5 @@ namespace IP_changer.Model
         public static string m_sDNS;
         public static string m_sTargetIP;
         public static bool m_bApplyEnable;
-        public static bool m_bLock;
     }
 }
