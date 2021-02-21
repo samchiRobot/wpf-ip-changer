@@ -136,6 +136,31 @@ namespace IP_changer.ViewModel
                 LogList.Add("[Result] Set DHCP Failed");
         }
 
+        private ICommand applyStaticCommand;
+        public ICommand ApplyStaticCommand
+        {
+            get { return (this.applyStaticCommand) ?? (this.applyStaticCommand = new DelegateCommand(ApplyStatic)); }
+        }
+        private void ApplyStatic()
+        {
+            LogList.Add("[Execute] Set static");
+            if (CDataManager.m_bApplyEnable)
+            {
+                _applyDataManager();
+                CDataManager.m_bApplyEnable = false;
+            }
+            LogList.Add("IP: " + iPManager.m_sIPv4);
+            LogList.Add("Mask: " + iPManager.m_sMask);
+            LogList.Add("GateWay: " + iPManager.m_sGateway);
+            LogList.Add("DNS: " + iPManager.m_sDNS);
+            bool bFlag = iPManager.SetNetStaticAddress();
+            if (bFlag)
+                LogList.Add("[Result] Set Static Success");
+            else
+                LogList.Add("[Result] Set Static Failed");
+        }
+
+
         private ICommand setStaticCommand;
         public ICommand SetStaticCommand
         {

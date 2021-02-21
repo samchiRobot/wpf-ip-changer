@@ -1,0 +1,56 @@
+﻿<Window x:Class="IP_changer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IP_changer"
+        mc:Ignorable="d"
+        Style="{DynamicResource CustomWindowStyle}"
+        ResizeMode="NoResize"
+        Title="IP changer" Height="430" Width="250">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <ComboBox x:Name="CBoxAdapter" Width="120" Height="30" Margin="5 10 5 10" BorderBrush="White" ItemsSource="{Binding Path=NetworkInterfaces}" SelectedItem="{Binding Path=SelectedNetworkInterface}" DisplayMemberPath="Name" ToolTip="Network adapter"/>
+            <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_IP Info" Command="{Binding IPInfoCommand}" ToolTip="Show network status"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _DHCP" />
+            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _Static" />
+        </StackPanel>
+        <!--StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Width="100" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="Set DHCP" Command="{Binding SetDHCPCommand}"/>
+            <Button Width="100" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="Set Static" Command="{Binding SetStaticCommand}"/>
+        </-->
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Visible">
+            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center"/>
+            <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_Ping"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Visibility="Visible">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="IP"/>
+                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Width="80" Height="30" Margin="5"  FontSize="14" Content="Subnet"/>
+                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="Gateway"/>
+                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="DNS"/>
+                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Width="120" Height="30" Margin="5"/>
+                <Button Width="80" Height="30" Margin="5" BorderBrush="White" FontSize="14" Content="Apply" />
+            </StackPanel>
+        </StackPanel>
+        
+        <ListBox x:Name="ListBoxProgramLog" Width="210" Height="200" Margin="0 10" BorderBrush="White" ItemsSource="{Binding LogList}"/>
+
+    </StackPanel>
+</Window>
