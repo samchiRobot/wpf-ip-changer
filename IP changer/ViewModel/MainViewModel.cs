@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -138,8 +139,8 @@ namespace IP_changer.ViewModel
                 }
             }
         }
-        
 
+        private bool isAdmin;
         private CIPManager IPControlManager;
         private CmdWindow cmdWindow;
         #endregion
@@ -164,6 +165,9 @@ namespace IP_changer.ViewModel
             AddressGateway = IPControlManager.m_sGateway;
             AddressDNS = IPControlManager.m_sDNS;
             TargetIP = "192.168.0.101";
+            isAdmin = IsAdministrator();
+            if (!isAdmin)
+                LogList.Add("[Error] Please execute as Admin");
         }
 
         private ICommand pingCommand;
@@ -209,7 +213,7 @@ namespace IP_changer.ViewModel
             WindowHeight = 400;
             bool bFlag = IPControlManager.SetDHCP();
 
-            if (bFlag)
+            if (bFlag & isAdmin)
                 LogList.Add("[Result] Set DHCP Success");
             else
                 LogList.Add("[Result] Set DHCP Failed");
@@ -257,7 +261,7 @@ namespace IP_changer.ViewModel
                 bFlag = IPControlManager.SetNetStaticAddress(false);
             }
 
-            if (bFlag)
+            if (bFlag & isAdmin)
                 LogList.Add("[Result] Set Static Success");
             else
                 LogList.Add("[Result] Set Static Failed");
@@ -281,6 +285,18 @@ namespace IP_changer.ViewModel
             }
         }
         #endregion
+
+        public static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            if (null != identity)
+            {
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            return false;
+        }
+
 
         #region ShowIPconfig
         private ICommand iPInfoCommand;
