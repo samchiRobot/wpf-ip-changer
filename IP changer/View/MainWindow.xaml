@@ -7,46 +7,42 @@
         mc:Ignorable="d"
         Style="{DynamicResource CustomWindowStyle}"
         ResizeMode="NoResize"
-        Title="IP changer" Height="430" Width="250">
+        Title="IP changer" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <ComboBox x:Name="CBoxAdapter" Width="120" Height="30" Margin="5 10 5 10" BorderBrush="White" ItemsSource="{Binding Path=NetworkInterfaces}" SelectedItem="{Binding Path=SelectedNetworkInterface}" DisplayMemberPath="Name" ToolTip="Network adapter"/>
             <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_IP Info" Command="{Binding IPInfoCommand}" ToolTip="Show network status"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _DHCP" />
-            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _Static" />
+            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _DHCP" IsChecked="{Binding IsDHCPEnabled}" Command="{Binding SetDHCPCommand}"/>
+            <RadioButton Width="100" Height="30" Margin="5" FontSize="14" Content=" _Static" Command="{Binding EnableStaticCommand}" />
         </StackPanel>
-        <!--StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="100" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="Set DHCP" Command="{Binding SetDHCPCommand}"/>
-            <Button Width="100" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="Set Static" Command="{Binding SetStaticCommand}"/>
-        </-->
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Visible">
-            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center"/>
-            <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_Ping"/>
+            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center" Text="{Binding TargetIP}"/>
+            <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_Ping test" Command="{Binding PingCommand}"/>
         </StackPanel>
 
-        <StackPanel Orientation="Vertical" Visibility="Visible">
+        <StackPanel Orientation="Vertical" Visibility="{Binding IsStaticVisible, Mode=TwoWay}" Margin="0,5,0,0" >
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="IP"/>
-                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+                <Label Width="80" Height="30" Margin="5,5,5,2.5" FontSize="14" Content="IP"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressIPv4}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="80" Height="30" Margin="5"  FontSize="14" Content="Subnet"/>
-                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+                <Label Width="80" Height="30" Margin="5,2.5"  FontSize="14" Content="Subnet"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressNetMask}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="Gateway"/>
-                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+                <Label Width="80" Height="30" Margin="5,2.5" FontSize="14" Content="Gateway"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressGateway}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="80" Height="30" Margin="5" FontSize="14" Content="DNS"/>
-                <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" />
+                <Label Width="80" Height="30" Margin="5,2.5" FontSize="14" Content="DNS"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressDNS}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="120" Height="30" Margin="5"/>
-                <Button Width="80" Height="30" Margin="5" BorderBrush="White" FontSize="14" Content="Apply" />
+                <Label Width="120" Height="30" Margin="5,2.5"/>
+                <Button Width="80" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" Content="Apply" Command="{Binding ApplyStaticCommand}"/>
             </StackPanel>
         </StackPanel>
         

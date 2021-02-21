@@ -6,22 +6,44 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace IP_changer.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
+        #region Parameters
+        private int _windowHeight;
+        public int WindowHeight
         {
-            if(PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            get { return _windowHeight; }
+            set { _windowHeight = value; OnPropertyChanged("WindowHeight"); }
+        }
+
+        private int _windowWidth;
+        public int WindowWidth
+        {
+            get { return _windowWidth; }
+            set { _windowWidth = value; }
+        }
+
+        private bool _isDHCPEnabled;
+        public bool IsDHCPEnabled
+        {
+            get { return _isDHCPEnabled; }
+            set { _isDHCPEnabled = value; OnPropertyChanged("IsDHCPEnabled"); }
+        }
+
+        private Visibility _isStaticVisible;
+        public Visibility IsStaticVisible
+        {
+            get { return _isStaticVisible; }
+            set { _isStaticVisible = value; OnPropertyChanged("IsStaticVisible"); }
         }
 
         private NetworkInterface[] _networkInterfaces;
@@ -38,6 +60,7 @@ namespace IP_changer.ViewModel
             set { _logList = value; }
         }
 
+
         private NetworkInterface _selectedNetworkInterface;
         public NetworkInterface SelectedNetworkInterface
         {
@@ -45,53 +68,102 @@ namespace IP_changer.ViewModel
             set 
             { 
                 _selectedNetworkInterface = value;
-                iPManager.m_SelectedNetworkInterface = _selectedNetworkInterface;
+                IPControlManager.m_SelectedNetworkInterface = _selectedNetworkInterface;
+                IsDHCPEnabled = IPControlManager.IsDHCPInterface();
             }
         }
 
-        IP_changer.Model.CIPManager iPManager;
+        private string _targetIP;
+        public string TargetIP
+        {
+            get { return _targetIP; }
+            set
+            {
+                _targetIP = value;
+            }
+        }
 
-        private SettingsWindow settings;
+
+        private string _addressIPv4;
+        public string AddressIPv4 
+        {
+            get { return _addressIPv4; }
+            set 
+            { 
+                _addressIPv4 = value;
+                if(IPControlManager.CheckValidAddress(_addressIPv4))
+                {
+                    IPControlManager.m_sIPv4 = _addressIPv4;
+                }
+            }
+        }
+        private string _addressNetMask;
+        public string AddressNetMask
+        {
+            get { return _addressNetMask; }
+            set
+            {
+                _addressNetMask = value;
+                if(IPControlManager.CheckValidAddress(_addressNetMask))
+                {
+                    IPControlManager.m_sMask = _addressNetMask;
+                }
+            }
+        }
+
+        private string _addressGateway;
+        public string AddressGateway
+        {
+            get { return _addressGateway; }
+            set
+            {
+                _addressGateway = value;
+                if (IPControlManager.CheckValidAddress(_addressGateway))
+                {
+                    IPControlManager.m_sGateway = _addressGateway;
+                }
+            }
+        }
+
+        private string _addressDNS;
+        public string AddressDNS
+        {
+            get { return _addressDNS; }
+            set
+            {
+                _addressDNS = value;
+                if (IPControlManager.CheckValidAddress(_addressDNS))
+                {
+                    IPControlManager.m_sDNS = _addressDNS;
+                }
+            }
+        }
+        
+
+        private CIPManager IPControlManager;
         private CmdWindow cmdWindow;
+        #endregion
+
         public MainViewModel()
         {
-            iPManager = new Model.CIPManager();
-            NetworkInterfaces = iPManager.m_ArrayNetworkInterface;
+            IPControlManager = new CIPManager();
+            NetworkInterfaces = IPControlManager.m_ArrayNetworkInterface;
             SelectedNetworkInterface = NetworkInterfaces[0];
+
             LogList = new ObservableCollection<string>();
 
-            settings = new SettingsWindow();
             cmdWindow = new CmdWindow();
-            _setDataManager();
-            _applyDataManager();
-        }
+            WindowHeight = 400;
+            WindowWidth = 250;
+            IsStaticVisible = Visibility.Collapsed;
 
-        private void _setDataManager()
-        {
-            CDataManager.m_sIPv4 = "192.168.0.10";
-            CDataManager.m_sMask = "255.255.255.0";
-            CDataManager.m_sGateway = "192.168.0.1";
-            CDataManager.m_sDNS = "8.8.8.8";
-            CDataManager.m_sTargetIP = "192.168.0.101";
-            CDataManager.m_bApplyEnable = false;
-        }
+            IPControlManager.ReadStaticIPv4();
 
-        private void _applyDataManager()
-        {
-            iPManager.m_sIPv4 =  CDataManager.m_sIPv4;
-            iPManager.m_sMask = CDataManager.m_sMask;
-            iPManager.m_sGateway = CDataManager.m_sGateway;
-            iPManager.m_sDNS = CDataManager.m_sDNS;
-        }
-
-        private ICommand settingsCommand;
-        public ICommand SettingsCommand
-        {
-            get { return (this.settingsCommand)??(this.settingsCommand=new DelegateCommand(Settings)); }
-        }
-        private void Settings()
-        {
-            settings.Show();          
+            AddressIPv4 = IPControlManager.m_sIPv4;
+            AddressNetMask = IPControlManager.m_sMask;
+            AddressGateway = IPControlManager.m_sGateway;
+            AddressDNS = IPControlManager.m_sDNS;
+            TargetIP = "192.168.0.101";
         }
 
         private ICommand pingCommand;
@@ -102,9 +174,13 @@ namespace IP_changer.ViewModel
         // FIXIT
         private void Ping()
         {
-            string targetIP = CDataManager.m_sTargetIP;
-            bool bFlag = iPManager.PingTarget(targetIP);
-            LogList.Add("[Execute] Ping to " + targetIP);
+            if (!IPControlManager.CheckValidAddress(TargetIP))
+            {
+                LogList.Add("[Error] Invalid Target IP");
+                return;
+            }
+            bool bFlag = IPControlManager.PingTarget(TargetIP);
+            LogList.Add("[Execute] Ping to " + TargetIP);
 
             if(bFlag)
                 LogList.Add("[Result] Ping Success");
@@ -129,11 +205,29 @@ namespace IP_changer.ViewModel
         }
         private void SetDHCP()
         {
-            bool bFlag = iPManager.SetDHCP();
-            if(bFlag)
+            IsStaticVisible = Visibility.Collapsed;
+            WindowHeight = 400;
+            bool bFlag = IPControlManager.SetDHCP();
+
+            if (bFlag)
                 LogList.Add("[Result] Set DHCP Success");
             else
                 LogList.Add("[Result] Set DHCP Failed");
+        }
+
+        #region Static Command
+
+        private ICommand enableStaticCommand;
+        public ICommand EnableStaticCommand
+        {
+            get { return (this.enableStaticCommand) ?? (this.enableStaticCommand = new DelegateCommand(EnableStatic)); }
+        }
+        private void EnableStatic()
+        {
+            WindowHeight = 580;
+            IsStaticVisible = Visibility.Visible;
+            IPControlManager.ReadStaticIPv4();
+            AddressIPv4 = IPControlManager.m_sIPv4;
         }
 
         private ICommand applyStaticCommand;
@@ -143,48 +237,52 @@ namespace IP_changer.ViewModel
         }
         private void ApplyStatic()
         {
-            LogList.Add("[Execute] Set static");
-            if (CDataManager.m_bApplyEnable)
+            if ((AddressIPv4 != IPControlManager.m_sIPv4) || (AddressNetMask != IPControlManager.m_sMask) || (AddressGateway != IPControlManager.m_sGateway))
             {
-                _applyDataManager();
-                CDataManager.m_bApplyEnable = false;
+                LogList.Add("[Error] Invalid address");
+                return;
             }
-            LogList.Add("IP: " + iPManager.m_sIPv4);
-            LogList.Add("Mask: " + iPManager.m_sMask);
-            LogList.Add("GateWay: " + iPManager.m_sGateway);
-            LogList.Add("DNS: " + iPManager.m_sDNS);
-            bool bFlag = iPManager.SetNetStaticAddress();
+            LogList.Add("[Execute] Set static");
+            LogList.Add("IP: " + IPControlManager.m_sIPv4);
+            LogList.Add("Mask: " + IPControlManager.m_sMask);
+            LogList.Add("GateWay: " + IPControlManager.m_sGateway);
+            bool bFlag = false;
+            if ((AddressDNS!=null)&&(AddressDNS==IPControlManager.m_sDNS))
+            {
+                LogList.Add("DNS: " + IPControlManager.m_sDNS);
+                bFlag = IPControlManager.SetNetStaticAddress(true);
+            }
+            else
+            {
+                bFlag = IPControlManager.SetNetStaticAddress(false);
+            }
+
             if (bFlag)
                 LogList.Add("[Result] Set Static Success");
             else
                 LogList.Add("[Result] Set Static Failed");
         }
 
+        #endregion
 
-        private ICommand setStaticCommand;
-        public ICommand SetStaticCommand
+        #region timer
+
+        #endregion
+
+
+
+        #region PropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
         {
-            get { return (this.setStaticCommand) ?? (this.setStaticCommand = new DelegateCommand(SetStatic)); }
-        }
-        private void SetStatic()
-        {
-            LogList.Add("[Execute] Set static");
-            if(CDataManager.m_bApplyEnable)
+            if (PropertyChanged != null)
             {
-                _applyDataManager();
-                CDataManager.m_bApplyEnable = false;
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-            LogList.Add("IP: "+ iPManager.m_sIPv4);
-            LogList.Add("Mask: " + iPManager.m_sMask);
-            LogList.Add("GateWay: " + iPManager.m_sGateway);
-            LogList.Add("DNS: " + iPManager.m_sDNS);
-            bool bFlag = iPManager.SetNetStaticAddress();
-            if (bFlag)
-                LogList.Add("[Result] Set Static Success");
-            else
-                LogList.Add("[Result] Set Static Failed");
         }
+        #endregion
 
+        #region ShowIPconfig
         private ICommand iPInfoCommand;
         public ICommand IPInfoCommand
         {
@@ -194,6 +292,7 @@ namespace IP_changer.ViewModel
         {
             cmdWindow.Show();
         }
+        #endregion
     }
 
     #region DelegateCommand Class

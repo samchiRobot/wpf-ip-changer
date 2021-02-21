@@ -101,11 +101,10 @@ namespace IP_changer.Model
         {
             this.m_cCmdPromptManager = new CCmdPromptManager();
             this.m_ArrayNetworkInterface = NetworkInterface.GetAllNetworkInterfaces();   // 사용가능한 모든 네트워크 interface를 반환
-            // FIXIT
-            m_sIPv4 = "192.168.0.4";
+            m_sIPv4 = "192.168.0.1";
             m_sMask = "255.255.255.0";
             m_sGateway = "192.168.0.1";
-            m_sDNS = "8.8.8.8";
+            m_sDNS = "";
         }
         public bool PingTarget(string sPingTarget, int nTimeOut = 120, string sData = "PING")
         {
@@ -127,16 +126,34 @@ namespace IP_changer.Model
             }
         }
 
-        public bool SetNetStaticAddress()
+        public bool SetNetStaticAddress(bool bSetDNS)
         {
             if (m_sIPv4 == null | m_sMask == null)
                 return false;
-            string sCmd = "netsh interface ip set address name=\"" + m_SelectedNetworkInterface.Name + "\" static " + m_sIPv4 + " " + m_sMask + " " + m_sGateway;
+            string sCmd = "";
+            sCmd = "netsh interface ip set address name=\"" + m_SelectedNetworkInterface.Name + "\" static " + m_sIPv4 + " " + m_sMask + " " + m_sGateway;
             m_cCmdPromptManager.RunCmd(sCmd);
-            sCmd = "netsh interface ip add dns name=\"" + m_SelectedNetworkInterface.Name + "\" " + m_sDNS;
-            m_cCmdPromptManager.RunCmd(sCmd);
+            if(bSetDNS)
+            {
+                sCmd = "netsh interface ip add dns name=\"" + m_SelectedNetworkInterface.Name + "\" " + m_sDNS;
+                m_cCmdPromptManager.RunCmd(sCmd);
+            }
             return true;
         }
+
+        public bool IsDHCPInterface()
+        {
+            return m_SelectedNetworkInterface.GetIPProperties().GetIPv4Properties().IsDhcpEnabled;
+        }
+
+        public bool ReadStaticIPv4()
+        {
+            if (IsDHCPInterface())
+                return false;
+            m_sIPv4 = m_SelectedNetworkInterface.GetIPProperties().UnicastAddresses[1].Address.ToString();
+            return true;
+        }
+
         public bool SetDHCP()
         {
             if (m_SelectedNetworkInterface == null)
@@ -184,6 +201,8 @@ namespace IP_changer.Model
         }
         public bool CheckValidAddress(string sAddress)
         {
+            if (sAddress == null)
+                return false;
             string[] vs = sAddress.Split('.');
             if (vs.Length > m_AddrMaxParse)
                 return false;
