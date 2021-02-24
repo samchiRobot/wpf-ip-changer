@@ -175,7 +175,7 @@ namespace IP_changer.ViewModel
         {
             get { return (this.pingCommand) ?? (this.pingCommand = new DelegateCommand(Ping)); }
         }
-        // FIXIT
+
         private void Ping()
         {
             if (!IPControlManager.CheckValidAddress(TargetIP))
@@ -184,7 +184,7 @@ namespace IP_changer.ViewModel
                 return;
             }
             bool bFlag = IPControlManager.PingTarget(TargetIP);
-            LogList.Add("[Execute] Ping to " + TargetIP);
+            LogList.Add("[Info] Ping to " + TargetIP);
 
             if(bFlag)
                 LogList.Add("[Result] Ping Success");
@@ -211,6 +211,12 @@ namespace IP_changer.ViewModel
         {
             IsStaticVisible = Visibility.Collapsed;
             WindowHeight = 400;
+            if(IPControlManager.IsDHCPInterface())
+            {
+                LogList.Add("[Info] DHCP Already Set");
+                return;
+            }
+
             bool bFlag = IPControlManager.SetDHCP();
 
             if (bFlag & isAdmin)
@@ -246,7 +252,7 @@ namespace IP_changer.ViewModel
                 LogList.Add("[Error] Invalid address");
                 return;
             }
-            LogList.Add("[Execute] Set static");
+            LogList.Add("[Info] Set static");
             LogList.Add("IP: " + IPControlManager.m_sIPv4);
             LogList.Add("Mask: " + IPControlManager.m_sMask);
             LogList.Add("GateWay: " + IPControlManager.m_sGateway);
