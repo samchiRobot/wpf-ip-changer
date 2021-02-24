@@ -170,6 +170,19 @@ namespace IP_changer.ViewModel
                 LogList.Add("[Error] Please execute as Admin");
         }
 
+        private ICommand f1Command;
+        public ICommand F1Command
+        {
+            get { return (this.f1Command) ?? (this.f1Command = new DelegateCommand(F1Pushed)); }
+        }
+
+        private void F1Pushed()
+        {
+            LogList.Add("[info] Open Github Site");
+            LogList.Add("https://github.com/samchiRobot/wpf-ip-changer");
+            System.Diagnostics.Process.Start("https://github.com/samchiRobot/wpf-ip-changer");
+        }
+
         private ICommand pingCommand;
         public ICommand PingCommand
         {
@@ -274,12 +287,6 @@ namespace IP_changer.ViewModel
         }
 
         #endregion
-
-        #region timer
-
-        #endregion
-
-
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

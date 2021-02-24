@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Style="{DynamicResource CustomWindowStyle}"
         ResizeMode="NoResize"
-        Title="IP changer" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
+        Title="IP changer v1.0.1" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <ComboBox x:Name="CBoxAdapter" Width="120" Height="30" Margin="5 10 5 10" BorderBrush="White" ItemsSource="{Binding Path=NetworkInterfaces}" SelectedItem="{Binding Path=SelectedNetworkInterface}" DisplayMemberPath="Name" ToolTip="Network adapter"/>
@@ -19,10 +19,14 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Visible">
-            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center" Text="{Binding TargetIP}"/>
+            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center" Text="{Binding TargetIP}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="F1" Command="{Binding F1Command}"/>
+                </TextBox.InputBindings>
+            </TextBox>
             <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_Ping test" Command="{Binding PingCommand}"/>
         </StackPanel>
-
+        
         <StackPanel Orientation="Vertical" Visibility="{Binding IsStaticVisible, Mode=TwoWay}" Margin="0,5,0,0" >
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="80" Height="30" Margin="5,5,5,2.5" FontSize="14" Content="IP"/>
