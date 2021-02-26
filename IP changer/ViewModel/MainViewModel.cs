@@ -198,7 +198,7 @@ namespace IP_changer.ViewModel
         {
             get { return (this.pingCommand) ?? (this.pingCommand = new DelegateCommand(Ping)); }
         }
-        TaskFactory uiFactory;
+
         private void Ping()
         {
             if (!IPControlManager.CheckValidAddress(TargetIP))
