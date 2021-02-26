@@ -198,7 +198,7 @@ namespace IP_changer.ViewModel
         {
             get { return (this.pingCommand) ?? (this.pingCommand = new DelegateCommand(Ping)); }
         }
-
+        TaskFactory uiFactory;
         private void Ping()
         {
             if (!IPControlManager.CheckValidAddress(TargetIP))
@@ -206,10 +206,16 @@ namespace IP_changer.ViewModel
                 LogList.Add("[Error] Invalid Target IP");
                 return;
             }
-            bool bFlag = IPControlManager.PingTarget(TargetIP);
+            int cnt = 0;
+            int nTimeout = 120;
             LogList.Add("[Info] Ping to " + TargetIP);
+            for (cnt = 0; cnt < 5; cnt++)
+            {
+                if (IPControlManager.PingTarget(TargetIP, nTimeout))
+                    break;
+            }
 
-            if(bFlag)
+            if(cnt<4)
                 LogList.Add("[Result] Ping Success");
             else
                 LogList.Add("[Result] Ping Failed");
