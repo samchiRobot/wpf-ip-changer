@@ -155,7 +155,7 @@ namespace IP_changer.ViewModel
 
             cmdWindow = new CmdWindow();
             WindowHeight = 400;
-            WindowWidth = 250;
+            WindowWidth = 260;
             IsStaticVisible = Visibility.Collapsed;
 
             IPControlManager.ReadStaticIPv4();

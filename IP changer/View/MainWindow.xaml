@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IP_changer"
         mc:Ignorable="d"
-        Style="{DynamicResource CustomWindowStyle}"
+        Style="{DynamicResource CustomToolWindowStyle}"
         ResizeMode="NoResize"
         Title="IP changer v1.0.1" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
     <StackPanel Orientation="Vertical">
