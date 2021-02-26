@@ -183,6 +183,16 @@ namespace IP_changer.ViewModel
             System.Diagnostics.Process.Start("https://github.com/samchiRobot/wpf-ip-changer");
         }
 
+        private ICommand clearLogCommand;
+        public ICommand ClearLogCommand
+        {
+            get { return (this.clearLogCommand) ?? (this.clearLogCommand = new DelegateCommand(ClearLog)); }
+        }
+        private void ClearLog()
+        {
+            LogList.Clear();
+        }
+
         private ICommand pingCommand;
         public ICommand PingCommand
         {
