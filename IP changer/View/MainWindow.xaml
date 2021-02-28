@@ -30,19 +30,19 @@
         <StackPanel Orientation="Vertical" Visibility="{Binding IsStaticVisible, Mode=TwoWay}" Margin="0,5,0,0" >
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="80" Height="30" Margin="5,5,5,2.5" FontSize="14" Content="IP"/>
-                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressIPv4}"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressIPv4, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="80" Height="30" Margin="5,2.5"  FontSize="14" Content="Subnet"/>
-                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressNetMask}" />
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressNetMask, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="80" Height="30" Margin="5,2.5" FontSize="14" Content="Gateway"/>
-                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressGateway}"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressGateway, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="80" Height="30" Margin="5,2.5" FontSize="14" Content="DNS"/>
-                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressDNS}"/>
+                <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressDNS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Width="120" Height="30" Margin="5,2.5"/>

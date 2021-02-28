@@ -70,7 +70,17 @@ namespace IP_changer.ViewModel
             { 
                 _selectedNetworkInterface = value;
                 IPControlManager.m_SelectedNetworkInterface = _selectedNetworkInterface;
-                IsDHCPEnabled = IPControlManager.IsDHCPInterface();
+                LogList.Add("[info] Adaptor : " + _selectedNetworkInterface.Name);
+                if (IPControlManager.IsDHCPInterface())
+                {
+                    LogList.Add("[info] Mode : DHCP");
+                    ClearStaticIP();
+                }
+                else
+                {
+                    LogList.Add("[info] Mode : Static");
+                    ReadSetStaticIP();
+                }
             }
         }
 
@@ -92,6 +102,7 @@ namespace IP_changer.ViewModel
             set 
             { 
                 _addressIPv4 = value;
+                OnPropertyChanged("AddressIPv4");
                 if(IPControlManager.CheckValidAddress(_addressIPv4))
                 {
                     IPControlManager.m_sIPv4 = _addressIPv4;
@@ -105,6 +116,7 @@ namespace IP_changer.ViewModel
             set
             {
                 _addressNetMask = value;
+                OnPropertyChanged("AddressNetMask");
                 if(IPControlManager.CheckValidAddress(_addressNetMask))
                 {
                     IPControlManager.m_sMask = _addressNetMask;
@@ -119,6 +131,7 @@ namespace IP_changer.ViewModel
             set
             {
                 _addressGateway = value;
+                OnPropertyChanged("AddressGateway");
                 if (IPControlManager.CheckValidAddress(_addressGateway))
                 {
                     IPControlManager.m_sGateway = _addressGateway;
@@ -133,6 +146,7 @@ namespace IP_changer.ViewModel
             set
             {
                 _addressDNS = value;
+                OnPropertyChanged("AddressDNS");
                 if (IPControlManager.CheckValidAddress(_addressDNS))
                 {
                     IPControlManager.m_sDNS = _addressDNS;
@@ -147,27 +161,46 @@ namespace IP_changer.ViewModel
 
         public MainViewModel()
         {
+
             IPControlManager = new CIPManager();
-            NetworkInterfaces = IPControlManager.m_ArrayNetworkInterface;
-            SelectedNetworkInterface = NetworkInterfaces[0];
+            ClearStaticIP();
 
             LogList = new ObservableCollection<string>();
+            isAdmin = IsAdministrator();
+            if (!isAdmin)
+                LogList.Add("[Error] Please execute as Admin");
 
-            cmdWindow = new CmdWindow();
             WindowHeight = 400;
             WindowWidth = 260;
             IsStaticVisible = Visibility.Collapsed;
 
-            IPControlManager.ReadStaticIPv4();
+            cmdWindow = new CmdWindow();
+            TargetIP = "192.168.0.101";
+            NetworkInterfaces = IPControlManager.m_ArrayNetworkInterface;
+            SelectedNetworkInterface = NetworkInterfaces[0];
+        }
 
+        public void ReadSetStaticIP()
+        {
+            IPControlManager.ReadStaticIPv4();
             AddressIPv4 = IPControlManager.m_sIPv4;
             AddressNetMask = IPControlManager.m_sMask;
-            AddressGateway = IPControlManager.m_sGateway;
             AddressDNS = IPControlManager.m_sDNS;
-            TargetIP = "192.168.0.101";
-            isAdmin = IsAdministrator();
-            if (!isAdmin)
-                LogList.Add("[Error] Please execute as Admin");
+            AddressGateway = IPControlManager.m_sGateway;
+
+            LogList.Add("[info] IP : " + AddressIPv4);
+            LogList.Add("[info] Mask : " + AddressNetMask);
+            LogList.Add("[info] Gateway : " + AddressGateway);
+            if(AddressDNS!=null)
+                LogList.Add("[info] DNS : " + AddressDNS);
+        }
+
+        public void ClearStaticIP()
+        {
+            AddressIPv4 = string.Empty;
+            AddressNetMask = string.Empty;
+            AddressGateway = string.Empty;
+            AddressDNS = string.Empty;
         }
 
         private ICommand f1Command;
@@ -249,7 +282,10 @@ namespace IP_changer.ViewModel
             bool bFlag = IPControlManager.SetDHCP();
 
             if (bFlag & isAdmin)
+            {
                 LogList.Add("[Result] Set DHCP Success");
+                ClearStaticIP();
+            }
             else
                 LogList.Add("[Result] Set DHCP Failed");
         }
@@ -265,8 +301,6 @@ namespace IP_changer.ViewModel
         {
             WindowHeight = 580;
             IsStaticVisible = Visibility.Visible;
-            IPControlManager.ReadStaticIPv4();
-            AddressIPv4 = IPControlManager.m_sIPv4;
         }
 
         private ICommand applyStaticCommand;
