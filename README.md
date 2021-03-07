@@ -4,7 +4,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/dotnet/wpf/blob/master/LICENSE.TXT)
 
 ## How to Use
-[Releases](https://github.com/samchiRobot/wpf-ip-changer/releases
+[Releases](https://github.com/samchiRobot/wpf-ip-changer/releases)
 - Download the latest release
 - Execute IP changer as Administrator
 
