@@ -29,8 +29,11 @@ namespace IP_changer
         private void ListBoxProgramLog_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var idx = ListBoxProgramLog.SelectedIndex;
-            var item = ListBoxProgramLog.Items.GetItemAt(idx);
-            ListBoxProgramLog.ScrollIntoView(item);
+            if(idx>0)
+            {
+                var item = ListBoxProgramLog.Items.GetItemAt(idx);
+                ListBoxProgramLog.ScrollIntoView(item);
+            }
         }
     }
 }

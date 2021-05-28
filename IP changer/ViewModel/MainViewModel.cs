@@ -168,6 +168,7 @@ namespace IP_changer.ViewModel
         private bool isAdmin;
         private CIPManager IPControlManager;
         private CmdWindow cmdWindow;
+
         #endregion
 
         public MainViewModel()
@@ -245,24 +246,31 @@ namespace IP_changer.ViewModel
 
         private void Ping()
         {
+            int nTImeOut = 80;
             if (!IPControlManager.CheckValidAddress(TargetIP))
             {
                 InsertLog("[Error] Invalid Target IP");
                 return;
             }
-            int cnt = 0;
-            int nTimeout = 120;
             InsertLog("[Info] Ping to " + TargetIP);
-            for (cnt = 0; cnt < 5; cnt++)
+            if (PingProcess(1,nTImeOut))
+                InsertLog("[Result] Ping Success");
+            else
+                InsertLog("[Result] Ping Failed");
+        }
+
+        private bool PingProcess(object obj, int nTimeout)
+        {
+            int cnt = 0;
+            for (cnt = 0; cnt < (int)obj; cnt++)
             {
                 if (IPControlManager.PingTarget(TargetIP, nTimeout))
                     break;
             }
-
-            if(cnt<4)
-                InsertLog("[Result] Ping Success");
+            if (cnt < (int)obj)
+                return true;
             else
-                InsertLog("[Result] Ping Failed");
+                return false;
         }
 
         private ICommand clearCommand;
@@ -374,9 +382,8 @@ namespace IP_changer.ViewModel
         public void InsertLog(string newItem)
         {
             SelectedIndexLog = LogList.Count;
-            var printIdx = (SelectedIndexLog % 100).ToString("D2");
+            var printIdx = (SelectedIndexLog % 1000).ToString("D2");
             LogList.Add(printIdx + ": " + newItem);
-            //LogList.Add(newItem);
         }
 
         #region ShowIPconfig
