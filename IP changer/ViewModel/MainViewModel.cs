@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -61,6 +62,16 @@ namespace IP_changer.ViewModel
             set { _logList = value; }
         }
 
+        private int _selectedIndexLog;
+        public int SelectedIndexLog
+        {
+            get { return _selectedIndexLog; }
+            set 
+            {
+                _selectedIndexLog = value;
+                OnPropertyChanged("SelectedIndexLog");
+            }
+        }
 
         private NetworkInterface _selectedNetworkInterface;
         public NetworkInterface SelectedNetworkInterface
@@ -70,15 +81,15 @@ namespace IP_changer.ViewModel
             { 
                 _selectedNetworkInterface = value;
                 IPControlManager.m_SelectedNetworkInterface = _selectedNetworkInterface;
-                LogList.Add("[info] Adaptor : " + _selectedNetworkInterface.Name);
+                InsertLog("[info] Adaptor : " + _selectedNetworkInterface.Name);
                 if (IPControlManager.IsDHCPInterface())
                 {
-                    LogList.Add("[info] Mode : DHCP");
+                    InsertLog("[info] Mode : DHCP");
                     ClearStaticIP();
                 }
                 else
                 {
-                    LogList.Add("[info] Mode : Static");
+                    InsertLog("[info] Mode : Static");
                     ReadSetStaticIP();
                 }
             }
@@ -168,7 +179,7 @@ namespace IP_changer.ViewModel
             LogList = new ObservableCollection<string>();
             isAdmin = IsAdministrator();
             if (!isAdmin)
-                LogList.Add("[Error] Please execute as Admin");
+                InsertLog("[Error] Please execute as Admin");
 
             WindowHeight = 400;
             WindowWidth = 260;
@@ -188,11 +199,11 @@ namespace IP_changer.ViewModel
             AddressDNS = IPControlManager.m_sDNS;
             AddressGateway = IPControlManager.m_sGateway;
 
-            LogList.Add("[info] IP : " + AddressIPv4);
-            LogList.Add("[info] Mask : " + AddressNetMask);
-            LogList.Add("[info] Gateway : " + AddressGateway);
+            InsertLog("[info] IP : " + AddressIPv4);
+            InsertLog("[info] Mask : " + AddressNetMask);
+            InsertLog("[info] Gateway : " + AddressGateway);
             if(AddressDNS!=null)
-                LogList.Add("[info] DNS : " + AddressDNS);
+                InsertLog("[info] DNS : " + AddressDNS);
         }
 
         public void ClearStaticIP()
@@ -211,8 +222,8 @@ namespace IP_changer.ViewModel
 
         private void F1Pushed()
         {
-            LogList.Add("[info] Open Github Site");
-            LogList.Add("https://github.com/samchiRobot/wpf-ip-changer");
+            InsertLog("[info] Open Github Site");
+            InsertLog("https://github.com/samchiRobot/wpf-ip-changer");
             System.Diagnostics.Process.Start("https://github.com/samchiRobot/wpf-ip-changer");
         }
 
@@ -236,12 +247,12 @@ namespace IP_changer.ViewModel
         {
             if (!IPControlManager.CheckValidAddress(TargetIP))
             {
-                LogList.Add("[Error] Invalid Target IP");
+                InsertLog("[Error] Invalid Target IP");
                 return;
             }
             int cnt = 0;
             int nTimeout = 120;
-            LogList.Add("[Info] Ping to " + TargetIP);
+            InsertLog("[Info] Ping to " + TargetIP);
             for (cnt = 0; cnt < 5; cnt++)
             {
                 if (IPControlManager.PingTarget(TargetIP, nTimeout))
@@ -249,9 +260,9 @@ namespace IP_changer.ViewModel
             }
 
             if(cnt<4)
-                LogList.Add("[Result] Ping Success");
+                InsertLog("[Result] Ping Success");
             else
-                LogList.Add("[Result] Ping Failed");
+                InsertLog("[Result] Ping Failed");
         }
 
         private ICommand clearCommand;
@@ -275,7 +286,7 @@ namespace IP_changer.ViewModel
             WindowHeight = 400;
             if(IPControlManager.IsDHCPInterface())
             {
-                LogList.Add("[Info] DHCP Already Set");
+                InsertLog("[Info] DHCP Already Set");
                 return;
             }
 
@@ -283,11 +294,11 @@ namespace IP_changer.ViewModel
 
             if (bFlag & isAdmin)
             {
-                LogList.Add("[Result] Set DHCP Success");
+                InsertLog("[Result] Set DHCP Success");
                 ClearStaticIP();
             }
             else
-                LogList.Add("[Result] Set DHCP Failed");
+                InsertLog("[Result] Set DHCP Failed");
         }
 
         #region Static Command
@@ -312,17 +323,17 @@ namespace IP_changer.ViewModel
         {
             if ((AddressIPv4 != IPControlManager.m_sIPv4) || (AddressNetMask != IPControlManager.m_sMask) || (AddressGateway != IPControlManager.m_sGateway))
             {
-                LogList.Add("[Error] Invalid address");
+                InsertLog("[Error] Invalid address");
                 return;
             }
-            LogList.Add("[Info] Set static");
-            LogList.Add("IP: " + IPControlManager.m_sIPv4);
-            LogList.Add("Mask: " + IPControlManager.m_sMask);
-            LogList.Add("GateWay: " + IPControlManager.m_sGateway);
+            InsertLog("[Info] Set static");
+            InsertLog("IP: " + IPControlManager.m_sIPv4);
+            InsertLog("Mask: " + IPControlManager.m_sMask);
+            InsertLog("GateWay: " + IPControlManager.m_sGateway);
             bool bFlag = false;
             if ((AddressDNS!=null)&&(AddressDNS==IPControlManager.m_sDNS))
             {
-                LogList.Add("DNS: " + IPControlManager.m_sDNS);
+                InsertLog("DNS: " + IPControlManager.m_sDNS);
                 bFlag = IPControlManager.SetNetStaticAddress(true);
             }
             else
@@ -331,9 +342,9 @@ namespace IP_changer.ViewModel
             }
 
             if (bFlag & isAdmin)
-                LogList.Add("[Result] Set Static Success");
+                InsertLog("[Result] Set Static Success");
             else
-                LogList.Add("[Result] Set Static Failed");
+                InsertLog("[Result] Set Static Failed");
         }
 
         #endregion
@@ -360,6 +371,11 @@ namespace IP_changer.ViewModel
             return false;
         }
 
+        public void InsertLog(string newItem)
+        {
+            LogList.Add(newItem);
+            SelectedIndexLog = LogList.Count - 1;
+        }
 
         #region ShowIPconfig
         private ICommand iPInfoCommand;
