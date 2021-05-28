@@ -25,5 +25,12 @@ namespace IP_changer
             InitializeComponent();
             this.DataContext = new ViewModel.MainViewModel();
         }
+
+        private void ListBoxProgramLog_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var idx = ListBoxProgramLog.SelectedIndex;
+            var item = ListBoxProgramLog.Items.GetItemAt(idx);
+            ListBoxProgramLog.ScrollIntoView(item);
+        }
     }
 }

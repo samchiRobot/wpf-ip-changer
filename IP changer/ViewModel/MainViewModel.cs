@@ -373,8 +373,10 @@ namespace IP_changer.ViewModel
 
         public void InsertLog(string newItem)
         {
-            LogList.Add(newItem);
-            SelectedIndexLog = LogList.Count - 1;
+            SelectedIndexLog = LogList.Count;
+            var printIdx = (SelectedIndexLog % 100).ToString("D2");
+            LogList.Add(printIdx + ": " + newItem);
+            //LogList.Add(newItem);
         }
 
         #region ShowIPconfig
