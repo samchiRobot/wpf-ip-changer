@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Style="{DynamicResource CustomToolWindowStyle}"
         ResizeMode="NoResize"
-        Title="IP changer v1.2.0" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
+        Title="IP changer v1.2.1" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}">
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <ComboBox x:Name="CBoxAdapter" Width="120" Height="30" Margin="5 10 5 10" BorderBrush="White" ItemsSource="{Binding Path=NetworkInterfaces}" SelectedItem="{Binding Path=SelectedNetworkInterface}" DisplayMemberPath="Name" ToolTip="Network adapter"/>
@@ -20,9 +20,10 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Visible">
-            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center" Text="{Binding TargetIP}">
+            <TextBox Width="120" Height="30" Margin="5" BorderBrush="White" FontSize="14" TextAlignment="Justify" VerticalContentAlignment="Center" Text="{Binding TargetIP, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                 <TextBox.InputBindings>
                     <KeyBinding Key="F1" Command="{Binding F1Command}"/>
+                    <KeyBinding Key="F2" Command="{Binding F2Command}"/>
                 </TextBox.InputBindings>
             </TextBox>
             <Button Width="80" Height="30" Margin="5" FontSize="14" BorderBrush="White" Content="_Ping test" Command="{Binding PingCommand}"/>
@@ -46,7 +47,8 @@
                 <TextBox Width="120" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" VerticalContentAlignment="Center" Text="{Binding AddressDNS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Width="120" Height="30" Margin="5,2.5"/>
+                <RadioButton Width="55" Height="30" Margin="5" FontSize="14" Content="Set 1" Command="{Binding EnableSet1Command}"/>
+                <RadioButton Width="55" Height="30" Margin="5" FontSize="14" Content="Set 2" Command="{Binding EnableSet2Command}"/>
                 <Button Width="80" Height="30" Margin="5,2.5" BorderBrush="White" FontSize="14" Content="_Apply" Command="{Binding ApplyStaticCommand}"/>
             </StackPanel>
         </StackPanel>

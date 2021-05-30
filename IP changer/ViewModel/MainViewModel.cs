@@ -102,6 +102,7 @@ namespace IP_changer.ViewModel
             set
             {
                 _targetIP = value;
+                OnPropertyChanged("TargetIP");
             }
         }
 
@@ -221,11 +222,22 @@ namespace IP_changer.ViewModel
             get { return (this.f1Command) ?? (this.f1Command = new DelegateCommand(F1Pushed)); }
         }
 
+
         private void F1Pushed()
         {
             InsertLog("[info] Open Github Site");
-            InsertLog("https://github.com/samchiRobot/wpf-ip-changer");
             System.Diagnostics.Process.Start("https://github.com/samchiRobot/wpf-ip-changer");
+        }
+
+        private ICommand f2Command;
+        public ICommand F2Command
+        {
+            get { return (this.f2Command) ?? (this.f2Command = new DelegateCommand(F2Pushed)); }
+        }
+
+        private void F2Pushed()
+        {
+            InsertLog("[info] Open IP setting JSON");
         }
 
         private ICommand clearLogCommand;
@@ -236,6 +248,34 @@ namespace IP_changer.ViewModel
         private void ClearLog()
         {
             LogList.Clear();
+        }
+
+        private ICommand enableSet1command;
+        public ICommand EnableSet1Command
+        {
+            get { return (this.enableSet1command) ?? (this.enableSet1command = new DelegateCommand(EnableSet1)); }
+        }
+
+        private void EnableSet1()
+        {
+            AddressIPv4 = "192.168.0.21";
+            AddressNetMask = "255.255.255.0";
+            AddressGateway = "192.168.0.1";
+            TargetIP = "192.168.0.101";
+        }
+
+        private ICommand enableSet2command;
+        public ICommand EnableSet2Command
+        {
+            get { return (this.enableSet2command) ?? (this.enableSet2command = new DelegateCommand(EnableSet2)); }
+        }
+
+        private void EnableSet2()
+        {
+            AddressIPv4 = "192.168.7.21";
+            AddressNetMask = "255.255.255.0";
+            AddressGateway = "192.168.7.1";
+            TargetIP = "192.168.7.101";
         }
 
         private ICommand pingCommand;
